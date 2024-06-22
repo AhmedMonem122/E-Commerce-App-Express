@@ -1,0 +1,16 @@
+{
+  "name": "e-commerce-app-express",
+  "version": "1.0.0",
+  "description": "Building an E-Commerce app as a backend with nodejs, expressjs, mongodb and mongoose",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Ahmed Monem",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.3"
+  }
+}
