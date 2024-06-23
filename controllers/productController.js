@@ -1,6 +1,7 @@
 const Product = require("../models/productModel");
+const catchAsync = require("../utils/catchAsync");
 
-const getAllProducts = async (req, res, next) => {
+const getAllProducts = catchAsync(async (req, res, next) => {
   const products = await Product.find();
 
   res.status(200).json({
@@ -9,9 +10,9 @@ const getAllProducts = async (req, res, next) => {
       products,
     },
   });
-};
+});
 
-const addProduct = async (req, res, next) => {
+const addProduct = catchAsync(async (req, res, next) => {
   const { title } = req.body;
 
   const newProduct = await Product.create({ title });
@@ -22,7 +23,7 @@ const addProduct = async (req, res, next) => {
       product: newProduct,
     },
   });
-};
+});
 
 module.exports = {
   getAllProducts,
