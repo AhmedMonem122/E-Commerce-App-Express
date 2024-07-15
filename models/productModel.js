@@ -6,6 +6,9 @@ const productSchema = new mongoose.Schema({
     required: [true, "Please provide a product title!"],
     minlength: [3, "A title should have at least 3 minimum characters!"],
   },
+  imageCover: {
+    type: String,
+  },
   description: {
     type: String,
     required: [true, "Please provide a product description!"],

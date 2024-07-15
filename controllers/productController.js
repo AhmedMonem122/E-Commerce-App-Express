@@ -36,6 +36,21 @@ const getAllProducts = catchAsync(async (req, res, next) => {
   });
 });
 
+const getSpecificProduct = catchAsync(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(new AppError("There is no product with that id!", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      product,
+    },
+  });
+});
+
 const addProduct = catchAsync(async (req, res, next) => {
   const newProduct = await Product.create(req.body);
 
@@ -87,6 +102,7 @@ const deleteProduct = catchAsync(async (req, res, next) => {
 
 module.exports = {
   getAllProducts,
+  getSpecificProduct,
   addProduct,
   updateProduct,
   deleteProduct,
