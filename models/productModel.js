@@ -9,6 +9,9 @@ const productSchema = new mongoose.Schema({
   imageCover: {
     type: String,
   },
+  images: {
+    type: [String],
+  },
   description: {
     type: String,
     required: [true, "Please provide a product description!"],
