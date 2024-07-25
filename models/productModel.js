@@ -21,11 +21,24 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: [true, "A title should have a price!"],
   },
+  brand: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Brand",
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
   },
   updatedAt: Date,
+});
+
+productSchema.pre(/^find/g, function (next) {
+  this.populate({
+    path: "brand",
+    select: "-__v",
+  });
+
+  next();
 });
 
 const Product = mongoose.model("Product", productSchema);

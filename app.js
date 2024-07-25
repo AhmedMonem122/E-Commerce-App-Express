@@ -1,6 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const productRouter = require("./routes/productRoutes");
+const categoryRouter = require("./routes/categoryRoutes");
+const brandRouter = require("./routes/brandRoutes");
 const userRouter = require("./routes/userRoutes");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -14,6 +16,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/api/v1/products", productRouter);
+app.use("/api/v1/categories", categoryRouter);
+app.use("/api/v1/brands", brandRouter);
 app.use("/api/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
