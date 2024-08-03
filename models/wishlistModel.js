@@ -7,6 +7,11 @@ const wishlistSchema = new mongoose.Schema({
     required: [true, "Your wishlist needs a product ID, Please provide it!"],
     unique: true,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  createdBy: String,
 });
 
 wishlistSchema.pre(/^find/g, function (next) {
