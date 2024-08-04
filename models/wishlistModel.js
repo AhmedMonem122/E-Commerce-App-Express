@@ -1,26 +1,18 @@
 const mongoose = require("mongoose");
 
 const wishlistSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Product",
-    required: [true, "Your wishlist needs a product ID, Please provide it!"],
-    unique: true,
-  },
+  products: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Product",
+      required: [true, "Your wishlist needs a product ID, Please provide it!"],
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now(),
   },
   createdBy: String,
-});
-
-wishlistSchema.pre(/^find/g, function (next) {
-  this.populate({
-    path: "product",
-    select: "-__v",
-  });
-
-  next();
 });
 
 const Wishlist = mongoose.model("Wishlist", wishlistSchema);
