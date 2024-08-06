@@ -4,10 +4,7 @@ const cartSchema = new mongoose.Schema({
   cartOwner: String,
   products: [
     {
-      count: {
-        type: Number,
-        default: 0,
-      },
+      count: Number,
       product: {
         type: mongoose.Schema.ObjectId,
         ref: "Product",
@@ -25,8 +22,9 @@ const cartSchema = new mongoose.Schema({
 
 cartSchema.pre(/^find/g, function (next) {
   this.populate({
-    path: "product",
-    select: "-__v",
+    path: "products",
+
+    populate: { path: "product", select: "-__v" },
   });
 
   next();
