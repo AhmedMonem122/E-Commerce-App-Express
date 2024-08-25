@@ -17,7 +17,31 @@ const calculateTotalCartPrice = (cart) => {
   );
 };
 
-const getLoggedUserCart = catchAsync(async (req, res, next) => {});
+const getLoggedUserCart = catchAsync(async (req, res, next) => {
+  const cart = await Cart.findOne({
+    cartOwner: { $eq: req.user._id },
+  });
+
+  if (!cart) {
+    return next(
+      new AppError(
+        "You don't have any products in your cart till now! You can add some.",
+        404
+      )
+    );
+  }
+
+  await cartProductPopulate(cart);
+
+  res.status(200).json({
+    status: "success",
+    numOfCartItems: cart.products.length,
+    cartId: cart._id,
+    data: {
+      cart,
+    },
+  });
+});
 
 const addProductToCart = catchAsync(async (req, res, next) => {
   let cart = await Cart.findOne({ cartOwner: { $eq: req.user._id } });
@@ -85,15 +109,78 @@ const addProductToCart = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: "success",
+    numOfCartItems: cart.products.length,
+    cartId: cart._id,
     data: {
       cart,
     },
   });
 });
 
-const updateProductCartQuantity = catchAsync(async (req, res, next) => {});
-const removeSpecificCartItem = catchAsync(async (req, res, next) => {});
-const clearUserCart = catchAsync(async (req, res, next) => {});
+const updateProductCartQuantity = catchAsync(async (req, res, next) => {
+  const cart = await Cart.findOne({
+    cartOwner: { $eq: req.user._id },
+  });
+
+  await cartProductPopulate(cart);
+
+  cart.products = cart.products.map((product) => {
+    if (product.product._id.toString() === req.params.productId) {
+      product.count = req.body.count;
+      product.price = product.product.price * product.count;
+      return product;
+    }
+
+    return product;
+  });
+
+  calculateTotalCartPrice(cart);
+
+  cart.updatedAt = Date.now();
+
+  await cart.save();
+
+  res.status(200).json({
+    status: "success",
+    numOfCartItems: cart.products.length,
+    cartId: cart._id,
+    data: {
+      cart,
+    },
+  });
+});
+
+const removeSpecificCartItem = catchAsync(async (req, res, next) => {
+  const cart = await Cart.findOne({
+    cartOwner: { $eq: req.user._id },
+  });
+
+  cart.products = cart.products.filter(
+    (product) => product.product._id.toString() !== req.params.productId
+  );
+
+  calculateTotalCartPrice(cart);
+
+  cart.updatedAt = Date.now();
+
+  await cart.save();
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+const clearUserCart = catchAsync(async (req, res, next) => {
+  await Cart.findOneAndDelete({
+    cartOwner: { $eq: req.user._id },
+  });
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
 
 module.exports = {
   getLoggedUserCart,
