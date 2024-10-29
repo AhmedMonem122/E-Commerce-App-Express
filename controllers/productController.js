@@ -8,7 +8,7 @@ const {
 } = require("./handlerFactory");
 
 const getAllProducts = getAll(Product);
-const getSpecificProduct = getOne(Product);
+const getSpecificProduct = getOne(Product, { path: "reviews" });
 const addProduct = addOne(Product);
 const updateProduct = updateOne(Product);
 const deleteProduct = deleteOne(Product);

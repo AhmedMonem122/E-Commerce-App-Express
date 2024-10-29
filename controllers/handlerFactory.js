@@ -4,7 +4,11 @@ const AppError = require("../utils/appError");
 
 const getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(Model.find(), req.query)
+    // To allow for nested GET reviews on tour
+    let filter = {};
+    if (req.params.productId) filter = { product: req.params.productId };
+
+    const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -38,9 +42,11 @@ const getAll = (Model) =>
     });
   });
 
-const getOne = (Model) =>
+const getOne = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.findById(req.params.id);
+    let query = Model.findById(req.params.id);
+    if (popOptions) query = query.populate(popOptions);
+    const doc = await query;
 
     const documentName = Model.modelName.toLowerCase();
 
