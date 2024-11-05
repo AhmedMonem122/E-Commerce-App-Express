@@ -9,7 +9,11 @@ router.use("/:productId/reviews", reviewRouter);
 router
   .route("/")
   .get(productController.getAllProducts)
-  .post(productController.addProduct);
+  .post(
+    productController.uploadProductImages,
+    productController.uploadProductImagesToFirebase,
+    productController.addProduct
+  );
 
 router
   .route("/:id")

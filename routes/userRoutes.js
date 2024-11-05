@@ -16,7 +16,13 @@ router.put(
   authController.updatePassword
 );
 
-router.patch("/updateMe", authController.protect, userController.updateMe);
+router.patch(
+  "/updateMe",
+  authController.protect,
+  userController.uploadUserPhoto,
+  userController.uploadUserPhotoToFirebase,
+  userController.updateMe
+);
 router.delete("/deleteMe", authController.protect, userController.deleteMe);
 
 router.get("/", userController.getAllUsers);
