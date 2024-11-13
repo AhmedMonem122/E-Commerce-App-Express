@@ -3,7 +3,7 @@ const catchAsync = require("../utils/catchAsync");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils/appError");
 const { promisify } = require("util");
-const sendEmail = require("../utils/email");
+const Email = require("../utils/email");
 const crypto = require("crypto");
 
 const signToken = (userPayload) => {
@@ -38,7 +38,7 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 const register = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm } = req.body;
+  const { name, email, password, passwordConfirm, url } = req.body;
 
   const newUser = await User.create({
     name,
@@ -46,6 +46,8 @@ const register = catchAsync(async (req, res, next) => {
     password,
     passwordConfirm,
   });
+
+  await new Email(newUser, url ? url : "").sendWelcome();
 
   createSendToken(newUser, 201, res);
 });
@@ -124,14 +126,10 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     "host"
   )}/api/v1/users/resetPassword/${resetToken}`;
 
-  const message = `Forgot your password? Submit a PUT request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+  // const message = `Forgot your password? Submit a PUT request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: "Your password reset token (valid for 10 min)",
-      message,
-    });
+    await new Email(user, resetURL).sendPasswordReset();
 
     res.status(200).json({
       status: "success",
