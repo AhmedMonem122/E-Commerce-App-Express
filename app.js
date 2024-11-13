@@ -12,6 +12,7 @@ const globalErrorHandler = require("./controllers/errorController");
 
 const app = express();
 
+app.use(express.urlencoded({ extended: false })); // Handles URL-encoded form data
 app.use(express.json());
 
 if (process.env.NODE_ENV === "development") {
