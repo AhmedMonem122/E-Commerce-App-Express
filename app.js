@@ -13,8 +13,8 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true, limit: "10kb" }));
-app.use(express.json({ limit: "10kb" }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
