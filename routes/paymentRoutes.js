@@ -7,7 +7,9 @@ const router = express.Router();
 router.post(
   "/checkout-session",
   authController.protect,
-  paymentController.createCheckoutSession
+  authController.restrictTo("user"),
+  paymentController.createCheckoutSession,
+  paymentController.createPaymentCheckout
 );
 
 module.exports = router;
