@@ -102,7 +102,7 @@ const webhookCheckout = (req, res, next) => {
 
   console.log("event: ", event);
 
-  if (event.data.object.enabled_events.includes("checkout.session.completed"))
+  if (event.type === "checkout.session.completed")
     createPaymentCheckout(event.data.object);
 
   res.status(200).json({ received: true });
