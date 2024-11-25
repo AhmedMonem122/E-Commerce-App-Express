@@ -5,6 +5,15 @@ const Cart = require("../models/cartModel");
 const User = require("../models/userModel");
 const Payment = require("../models/paymentModel");
 
+const validateUrl = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+  } catch (e) {
+    return false;
+  }
+};
+
 const createCheckoutSession = catchAsync(async (req, res, next) => {
   const cart = await Cart.findOne({
     cartOwner: { $eq: req.user._id },
@@ -23,9 +32,9 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     );
   }
 
-  if (!req.query.url) {
+  if (!req.query.url || !validateUrl(req.query.url)) {
     return next(
-      new AppError("Please provide a valid url to continue your purchase.", 404)
+      new AppError("Please provide a valid URL to continue your purchase.", 400)
     );
   }
 
@@ -51,7 +60,7 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     success_url: `${req.query.url}/allOrders`,
     cancel_url: `${req.query.url}/`,
     customer_email: req.user.email,
-    client_reference_id: cart._id,
+    client_reference_id: cart._id.toString(),
   });
 
   res.status(200).json({
