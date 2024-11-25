@@ -61,6 +61,7 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     cancel_url: `${req.query.url}/`,
     customer_email: req.user.email,
     client_reference_id: cart._id.toString(),
+    metadata: { line_items, cart },
   });
 
   res.status(200).json({
@@ -70,19 +71,18 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
 });
 
 const createPaymentCheckout = catchAsync(async (session) => {
-  const cartId = session.client_reference_id;
-
-  const cart = await Cart.findById(cartId);
+  const { cart, line_items } = session.metadata;
   const products = cart.products.map((product) => product.product);
-
-  const user = (await User.findOne({ email: session.customer_email })).id;
-  const price = session.display_items
+  const user = cart.cartOwner;
+  const price = line_items
     .map((item) => item.price_data.unit_amount / 100)
     .reduce((acc, amount) => amount + acc, 0);
-  const amount = session.display_items
+  const amount = line_items
     .map((item) => item.quantity)
     .reduce((acc, count) => count + acc, 0);
   await Payment.create({ products, user, price, amount });
+
+  await Cart.findByIdAndDelete(cart._id);
 });
 
 const webhookCheckout = (req, res, next) => {
@@ -99,7 +99,7 @@ const webhookCheckout = (req, res, next) => {
     return res.status(400).send(`Webhook error: ${err.message}`);
   }
 
-  if (event.type === "checkout.session.completed")
+  if (event.data.object.enabled_events.includes("checkout.session.completed"))
     createPaymentCheckout(event.data.object);
 
   res.status(200).json({ received: true });
