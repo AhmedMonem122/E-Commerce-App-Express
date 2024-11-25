@@ -100,6 +100,8 @@ const webhookCheckout = (req, res, next) => {
     return res.status(400).send(`Webhook error: ${err.message}`);
   }
 
+  console.log("event: ", event);
+
   if (event.data.object.enabled_events.includes("checkout.session.completed"))
     createPaymentCheckout(event.data.object);
 
