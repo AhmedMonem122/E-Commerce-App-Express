@@ -8,8 +8,7 @@ router.post(
   "/checkout-session",
   authController.protect,
   authController.restrictTo("user"),
-  paymentController.createCheckoutSession,
-  paymentController.createPaymentCheckout
+  paymentController.createCheckoutSession
 );
 
 module.exports = router;

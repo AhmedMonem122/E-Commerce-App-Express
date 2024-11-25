@@ -110,6 +110,5 @@ const webhookCheckout = (req, res, next) => {
 
 module.exports = {
   createCheckoutSession,
-  createPaymentCheckout,
   webhookCheckout,
 };
