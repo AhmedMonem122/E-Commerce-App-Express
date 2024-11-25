@@ -61,7 +61,10 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     cancel_url: `${req.query.url}/`,
     customer_email: req.user.email,
     client_reference_id: cart._id.toString(),
-    metadata: { line_items, cart },
+    metadata: {
+      line_items: JSON.stringify(line_items),
+      cart: JSON.stringify(cart),
+    },
   });
 
   res.status(200).json({
