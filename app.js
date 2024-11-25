@@ -12,8 +12,15 @@ const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const paymentController = require("./controllers/paymentController");
 
 const app = express();
+
+app.post(
+  "/webhook-checkout",
+  bodyParser.raw({ type: "application/json" }),
+  paymentController.webhookCheckout
+);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
