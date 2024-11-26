@@ -102,8 +102,11 @@ const webhookCheckout = (req, res, next) => {
 
   console.log("event: ", event);
 
-  if (event.type === "checkout.session.completed")
+  if (event.type === "checkout.session.completed") {
+    console.log("Payment was successful!");
+
     createPaymentCheckout(event.data.object);
+  }
 
   res.status(200).json({ received: true });
 };
