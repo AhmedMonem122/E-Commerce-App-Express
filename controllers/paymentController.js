@@ -71,6 +71,8 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
 });
 
 const createPaymentCheckout = catchAsync(async (session) => {
+  console.log("test checkout");
+
   const { cartId } = session.metadata;
 
   const cart = await Cart.findById(cartId);
