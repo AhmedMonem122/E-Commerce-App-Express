@@ -70,7 +70,7 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
-const createPaymentCheckout = catchAsync(async (session) => {
+const createPaymentCheckout = async (session) => {
   console.log("test checkout");
 
   const { cartId } = session.metadata;
@@ -88,9 +88,9 @@ const createPaymentCheckout = catchAsync(async (session) => {
   await Cart.findByIdAndDelete(cartId);
 
   console.log("Payment was successful! inside createPaymentCheckout");
-});
+};
 
-const webhookCheckout = async (req, res, next) => {
+const webhookCheckout = (req, res, next) => {
   const signature = req.headers["stripe-signature"];
 
   let event;
@@ -109,7 +109,7 @@ const webhookCheckout = async (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     console.log("Payment was successful!");
 
-    await createPaymentCheckout(event.data.object);
+    createPaymentCheckout(event.data.object);
   }
 
   res.status(200).json({ received: true });
