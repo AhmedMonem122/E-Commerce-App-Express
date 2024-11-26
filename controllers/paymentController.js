@@ -34,10 +34,10 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
   }
 
   if (
-    !req.body.shippingAddress &&
-    !req.body.shippingAddress.details &&
-    !req.body.shippingAddress.phone &&
-    !req.body.shippingAddress.city
+    !req.body?.shippingAddress &&
+    !req.body?.shippingAddress?.details &&
+    !req.body?.shippingAddress?.phone &&
+    !req.body?.shippingAddress?.city
   ) {
     return next(
       new AppError(
