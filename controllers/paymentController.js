@@ -86,6 +86,8 @@ const createPaymentCheckout = catchAsync(async (session) => {
   await Payment.create({ products, user, price, amount });
 
   await Cart.findByIdAndDelete(cartId);
+
+  console.log("Payment was successful! inside createPaymentCheckout");
 });
 
 const webhookCheckout = (req, res, next) => {
