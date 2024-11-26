@@ -18,7 +18,7 @@ const app = express();
 
 app.post(
   "/webhook-checkout",
-  bodyParser.raw({ type: "application/json" }),
+  express.raw({ type: "application/json" }),
   paymentController.webhookCheckout
 );
 
