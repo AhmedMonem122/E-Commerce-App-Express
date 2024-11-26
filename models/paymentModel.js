@@ -25,6 +25,11 @@ const paymentSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  shippingAddress: {
+    details: String,
+    phone: String,
+    city: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

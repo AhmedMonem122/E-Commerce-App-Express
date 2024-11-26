@@ -2,16 +2,11 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Cart = require("../models/cartModel");
-const User = require("../models/userModel");
 const Payment = require("../models/paymentModel");
 
 const validateUrl = (url) => {
-  try {
-    const parsedUrl = new URL(url);
-    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
-  } catch (e) {
-    return false;
-  }
+  const urlPattern = /^(https?:\/\/)([\w.-]+)(:\d+)?(\/[^\s]*)?$/i;
+  return urlPattern.test(url);
 };
 
 const createCheckoutSession = catchAsync(async (req, res, next) => {
@@ -38,6 +33,20 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (
+    !req.body.shippingAddress &&
+    !req.body.shippingAddress.details &&
+    !req.body.shippingAddress.phone &&
+    !req.body.shippingAddress.city
+  ) {
+    return next(
+      new AppError(
+        "Please provide a shipping address to continue your purchase.",
+        400
+      )
+    );
+  }
+
   const line_items = cart.products.map((product) => {
     return {
       price_data: {
@@ -61,7 +70,7 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     cancel_url: `${req.query.url}/`,
     customer_email: req.user.email,
     client_reference_id: cart._id.toString(),
-    metadata: { cartId: cart._id.toString() },
+    metadata: { shippingAddress: JSON.stringify(req.body.shippingAddress) },
   });
 
   res.status(200).json({
@@ -71,23 +80,18 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
 });
 
 const createPaymentCheckout = async (session) => {
-  console.log("test checkout");
-
-  const { cartId } = session.metadata;
-
+  const cartId = session.client_reference_id;
   const cart = await Cart.findById(cartId);
   const products = cart.products.map((product) => product.product);
-
   const user = cart.cartOwner;
   const price = cart.totalCartPrice;
   const amount = cart.products
     .map((item) => item.count)
     .reduce((acc, count) => count + acc, 0);
-  await Payment.create({ products, user, price, amount });
+  const shippingAddress = JSON.parse(session.metadata.shippingAddress);
+  await Payment.create({ products, user, price, amount, shippingAddress });
 
   await Cart.findByIdAndDelete(cartId);
-
-  console.log("Payment was successful! inside createPaymentCheckout");
 };
 
 const webhookCheckout = async (req, res, next) => {
@@ -104,13 +108,8 @@ const webhookCheckout = async (req, res, next) => {
     return res.status(400).send(`Webhook error: ${err.message}`);
   }
 
-  console.log("event: ", event);
-
-  if (event.type === "checkout.session.completed") {
-    console.log("Payment was successful!");
-
+  if (event.type === "checkout.session.completed")
     await createPaymentCheckout(event.data.object);
-  }
 
   res.status(200).json({ received: true });
 };
