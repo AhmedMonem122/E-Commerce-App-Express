@@ -90,7 +90,7 @@ const createPaymentCheckout = async (session) => {
   console.log("Payment was successful! inside createPaymentCheckout");
 };
 
-const webhookCheckout = (req, res, next) => {
+const webhookCheckout = async (req, res, next) => {
   const signature = req.headers["stripe-signature"];
 
   let event;
@@ -109,7 +109,7 @@ const webhookCheckout = (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     console.log("Payment was successful!");
 
-    createPaymentCheckout(event.data.object);
+    await createPaymentCheckout(event.data.object);
   }
 
   res.status(200).json({ received: true });
