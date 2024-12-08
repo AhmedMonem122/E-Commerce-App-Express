@@ -3,9 +3,13 @@ const mongoose = require("mongoose");
 const paymentSchema = new mongoose.Schema({
   products: [
     {
-      type: mongoose.Schema.ObjectId,
-      ref: "Product",
-      required: [true, "A payment must belong to at least one product!"],
+      count: Number,
+      product: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Product",
+        required: [true, "A payment needs a product Id to be added!"],
+      },
+      price: Number,
     },
   ],
   user: {

@@ -82,14 +82,20 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
 const createPaymentCheckout = async (session) => {
   const cartId = session.client_reference_id;
   const cart = await Cart.findById(cartId);
-  const products = cart.products.map((product) => product.product);
+  // const products = cart.products.map((product) => product.product);
   const user = cart.cartOwner;
   const price = cart.totalCartPrice;
   const amount = cart.products
     .map((item) => item.count)
     .reduce((acc, count) => count + acc, 0);
   const shippingAddress = JSON.parse(session.metadata.shippingAddress);
-  await Payment.create({ products, user, price, amount, shippingAddress });
+  await Payment.create({
+    products: cart.products,
+    user,
+    price,
+    amount,
+    shippingAddress,
+  });
 
   await Cart.findByIdAndDelete(cartId);
 };
