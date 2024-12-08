@@ -3,6 +3,7 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Cart = require("../models/cartModel");
 const Payment = require("../models/paymentModel");
+const handlerFactory = require("./handlerFactory");
 
 const validateUrl = (url) => {
   const urlPattern = /^(https?:\/\/)([\w.-]+)(:\d+)?(\/[^\s]*)?$/i;
@@ -120,7 +121,30 @@ const webhookCheckout = async (req, res, next) => {
   res.status(200).json({ received: true });
 };
 
+const getUserPayments = catchAsync(async (req, res, next) => {
+  const payments = await Payment.find({ user: req.user._id });
+  res.status(200).json({
+    status: "success",
+    results: payments.length,
+    data: {
+      payments,
+    },
+  });
+});
+
+const getAllPayments = handlerFactory.getAll(Payment);
+const getSpecificPayment = handlerFactory.getOne(Payment);
+const addPayment = handlerFactory.addOne(Payment);
+const updatePayment = handlerFactory.updateOne(Payment);
+const deletePayment = handlerFactory.deleteOne(Payment);
+
 module.exports = {
   createCheckoutSession,
   webhookCheckout,
+  getUserPayments,
+  getAllPayments,
+  getSpecificPayment,
+  addPayment,
+  updatePayment,
+  deletePayment,
 };

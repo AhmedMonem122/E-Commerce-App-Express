@@ -43,11 +43,12 @@ const paymentSchema = new mongoose.Schema({
 
 paymentSchema.pre(/^find/g, function (next) {
   this.populate({
-    path: "product",
-    select: "-__v",
+    path: "products",
+
+    populate: { path: "product", select: "-__v" },
   }).populate({
     path: "user",
-    select: "-__v",
+    select: "-__v -password",
   });
   next();
 });

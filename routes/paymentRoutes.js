@@ -11,4 +11,11 @@ router.post(
   paymentController.createCheckoutSession
 );
 
+router.get(
+  "/",
+  authController.protect,
+  authController.restrictTo("user"),
+  paymentController.getUserPayments
+);
+
 module.exports = router;
