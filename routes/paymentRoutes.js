@@ -4,18 +4,23 @@ const authController = require("../controllers/authController");
 
 const router = express.Router();
 
-router.post(
-  "/checkout-session",
-  authController.protect,
-  authController.restrictTo("user"),
-  paymentController.createCheckoutSession
-);
+router.use(authController.protect);
 
-router.get(
-  "/",
-  authController.protect,
-  authController.restrictTo("user"),
-  paymentController.getUserPayments
-);
+router.post("/checkout-session", paymentController.createCheckoutSession);
+
+router.get("/myPayments", paymentController.getUserPayments);
+
+router.use(authController.restrictTo("admin"));
+
+router
+  .route("/")
+  .get(paymentController.getAllPayments)
+  .post(paymentController.addPayment);
+
+router
+  .route("/:id")
+  .get(paymentController.getSpecificPayment)
+  .patch(paymentController.updatePayment)
+  .delete(paymentController.deletePayment);
 
 module.exports = router;

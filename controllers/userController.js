@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const multer = require("multer");
+const factory = require("./handlerFactory");
 // const firebaseAdminConfig = require("../config/firebaseConfig");
 // const admin = require("firebase-admin");
 const admin = require("../config/firebase");
@@ -114,18 +115,10 @@ const filterObj = (obj, ...allowedFields) => {
 
   return newObj;
 };
-
-const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
+const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm)
@@ -160,8 +153,19 @@ const deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
+const getAllUsers = factory.getAll(User);
+const getUser = factory.getOne(User);
+const createUser = factory.addOne(User);
+const updateUser = factory.updateOne(User);
+const deleteUser = factory.deleteOne(User);
+
 module.exports = {
   getAllUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  getMe,
   updateMe,
   deleteMe,
   uploadUserPhoto,

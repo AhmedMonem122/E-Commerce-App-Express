@@ -10,21 +10,29 @@ router.post("/signin", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.put("/resetPassword/:token", authController.resetPassword);
 
-router.put(
-  "/updateMyPassword",
-  authController.protect,
-  authController.updatePassword
-);
+router.use(authController.protect);
 
+router.put("/updateMyPassword", authController.updatePassword);
+router.get("/me", userController.getMe, userController.getUser);
 router.patch(
   "/updateMe",
-  authController.protect,
   userController.uploadUserPhoto,
   userController.uploadUserPhotoToFirebase,
   userController.updateMe
 );
-router.delete("/deleteMe", authController.protect, userController.deleteMe);
+router.delete("/deleteMe", userController.deleteMe);
 
-router.get("/", userController.getAllUsers);
+router.use(authController.restrictTo("admin"));
+
+router
+  .route("/")
+  .get(userController.getAllUsers)
+  .post(userController.createUser);
+
+router
+  .route("/:id")
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;
