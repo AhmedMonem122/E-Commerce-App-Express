@@ -14,6 +14,7 @@ const addReview = catchAsync(async (req, res, next) => {
 
   const currentUserReview = await Review.findOne({
     user: { $eq: req.user._id },
+    product: { $eq: req.params.productId },
   });
 
   if (

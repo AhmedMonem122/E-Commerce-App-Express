@@ -218,6 +218,42 @@ const uploadProductImagesToFirebase = catchAsync(async (req, res, next) => {
   next();
 });
 
+const getProductStats = catchAsync(async (req, res, next) => {
+  const stats = await Product.aggregate([
+    {
+      $match: { ratingsAverage: { $gte: 1 } },
+    },
+    {
+      $group: {
+        _id: null,
+        numProducts: { $sum: 1 },
+        numRatings: { $sum: "$ratingsQuantity" },
+        avgRating: { $avg: "$ratingsAverage" },
+        avgPrice: { $avg: "$price" },
+        minPrice: { $min: "$price" },
+        maxPrice: { $max: "$price" },
+      },
+    },
+    {
+      $sort: { avgPrice: 1 },
+    },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      stats,
+    },
+  });
+});
+
+const aliasTopProducts = (req, res, next) => {
+  req.query.limit = "5";
+  req.query.sort = "-ratingsAverage,price";
+  req.query.fields = "title,price,ratingsAverage,description";
+  next();
+};
+
 const getAllProducts = getAll(Product);
 const getSpecificProduct = getOne(Product, { path: "reviews" });
 const addProduct = addOne(Product);
@@ -232,4 +268,6 @@ module.exports = {
   deleteProduct,
   uploadProductImages,
   uploadProductImagesToFirebase,
+  aliasTopProducts,
+  getProductStats,
 };
