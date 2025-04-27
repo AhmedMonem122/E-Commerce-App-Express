@@ -250,7 +250,7 @@ const getProductStats = catchAsync(async (req, res, next) => {
 const aliasTopProducts = (req, res, next) => {
   req.query.limit = "5";
   req.query.sort = "-ratingsAverage,price";
-  req.query.fields = "title,price,ratingsAverage,description";
+  req.query.fields = "title,price,ratingsAverage,description,imageCover";
   next();
 };
 
