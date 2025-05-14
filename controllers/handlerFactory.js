@@ -127,10 +127,42 @@ const deleteOne = (Model) =>
     });
   });
 
+// Upload image to Firebase Storage
+const uploadImageToFirebase = (fileDest, storage) =>
+  catchAsync(async (req, res, next) => {
+    if (!req.file) return next();
+
+    const file = req.file;
+
+    const safeName = fileDest.slice(0, fileDest.length - 1).toLowerCase();
+    const filename = `${fileDest}/${safeName}-${
+      req.params[`${safeName}Id`] || ""
+    }-${file.originalname}-${Date.now()}`;
+
+    const fileRef = storage.file(filename); // Create a file reference in the storage bucket
+
+    // Set metadata
+    const metadata = {
+      contentType: file.mimetype,
+    };
+
+    // Upload the file buffer
+    await fileRef.save(file.buffer, { metadata });
+
+    // Get the download URL
+    const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${
+      process.env.FIREBASE_STORAGE_BUCKET
+    }/o/${encodeURIComponent(filename)}?alt=media`;
+    req.body.image = downloadURL;
+
+    next();
+  });
+
 module.exports = {
   getAll,
   getOne,
   addOne,
   updateOne,
   deleteOne,
+  uploadImageToFirebase,
 };

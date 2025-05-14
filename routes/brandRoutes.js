@@ -10,6 +10,8 @@ router
   .post(
     authController.protect,
     authController.restrictTo("admin"),
+    brandController.uploadBrandImage,
+    brandController.uploadBrandImageToFirebase,
     brandController.addBrand
   );
 
@@ -19,6 +21,8 @@ router
   .patch(
     authController.protect,
     authController.restrictTo("admin"),
+    brandController.uploadBrandImage,
+    brandController.uploadBrandImageToFirebase,
     brandController.updateBrand
   )
   .delete(
