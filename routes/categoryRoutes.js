@@ -10,6 +10,8 @@ router
   .post(
     authController.protect,
     authController.restrictTo("admin"),
+    categoryController.uploadCategoryImage,
+    categoryController.uploadCategoryImageToFirebase,
     categoryController.addCategory
   );
 
@@ -19,6 +21,8 @@ router
   .patch(
     authController.protect,
     authController.restrictTo("admin"),
+    categoryController.uploadCategoryImage,
+    categoryController.uploadCategoryImageToFirebase,
     categoryController.updateCategory
   )
   .delete(
