@@ -40,6 +40,10 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Brand",
     },
+    category: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Category",
+    },
     createdAt: {
       type: Date,
       default: Date.now(),
@@ -61,6 +65,9 @@ productSchema.virtual("reviews", {
 productSchema.pre(/^find/g, function (next) {
   this.populate({
     path: "brand",
+    select: "-__v",
+  }).populate({
+    path: "category",
     select: "-__v",
   });
 
