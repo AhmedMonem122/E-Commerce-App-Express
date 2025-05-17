@@ -1,8 +1,16 @@
 const express = require("express");
 const brandController = require("../controllers/brandController");
 const authController = require("../controllers/authController");
+const productController = require("../controllers/productController");
+const productRouter = require("./productRoutes");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
+
+router.use(
+  "/:brandId/products",
+  productController.filterByBrands,
+  productRouter
+);
 
 router
   .route("/")

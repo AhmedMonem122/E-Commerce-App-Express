@@ -1,11 +1,16 @@
 const express = require("express");
 const categoryController = require("../controllers/categoryController");
 const authController = require("../controllers/authController");
+const productController = require("../controllers/productController");
 const productRouter = require("./productRoutes");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.use("/:categoryId/products", productRouter);
+router.use(
+  "/:categoryId/products",
+  productController.filterByCategories,
+  productRouter
+);
 
 router
   .route("/")

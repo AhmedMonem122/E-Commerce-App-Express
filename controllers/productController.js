@@ -254,6 +254,19 @@ const aliasTopProducts = (req, res, next) => {
   next();
 };
 
+const filterByBrands = (req, res, next) => {
+  if (req.params.brandId) {
+    req.query.brand = req.params.brandId;
+  }
+  next();
+};
+const filterByCategories = (req, res, next) => {
+  if (req.params.categoryId) {
+    req.query.category = req.params.categoryId;
+  }
+  next();
+};
+
 const getAllProducts = getAll(Product);
 const getSpecificProduct = getOne(Product, { path: "reviews" });
 const addProduct = addOne(Product);
@@ -270,4 +283,6 @@ module.exports = {
   uploadProductImagesToFirebase,
   aliasTopProducts,
   getProductStats,
+  filterByBrands,
+  filterByCategories,
 };
