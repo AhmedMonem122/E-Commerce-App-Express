@@ -1,8 +1,11 @@
 const express = require("express");
 const categoryController = require("../controllers/categoryController");
 const authController = require("../controllers/authController");
+const productRouter = require("./productRoutes");
 
 const router = express.Router();
+
+router.use("/:categoryId/products", productRouter);
 
 router
   .route("/")
