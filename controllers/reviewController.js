@@ -64,8 +64,8 @@ const checkReviewOwnership = catchAsync(async (req, res, next) => {
 
   next();
 });
-const updateReview = updateOne(Review);
-const deleteReview = deleteOne(Review);
+const updateReview = [checkReviewOwnership, updateOne(Review)];
+const deleteReview = [checkReviewOwnership, deleteOne(Review)];
 
 module.exports = {
   setProductUserIds,

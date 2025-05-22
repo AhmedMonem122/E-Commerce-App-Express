@@ -22,13 +22,11 @@ router
   .patch(
     authController.protect,
     authController.restrictTo("user", "admin"),
-    reviewController.checkReviewOwnership,
     reviewController.updateReview
   )
   .delete(
     authController.protect,
     authController.restrictTo("user", "admin"),
-    reviewController.checkReviewOwnership,
     reviewController.deleteReview
   );
 
