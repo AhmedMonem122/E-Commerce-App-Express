@@ -58,7 +58,7 @@ const checkReviewOwnership = catchAsync(async (req, res, next) => {
     return next(new AppError("No review found with that ID", 404));
   }
 
-  if (review.user.id !== req.user.id) {
+  if (review.user._id !== req.user.id) {
     return next(new AppError("You can only modify your own reviews", 403));
   }
 
