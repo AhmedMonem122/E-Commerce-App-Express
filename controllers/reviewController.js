@@ -51,6 +51,19 @@ const addReview = catchAsync(async (req, res, next) => {
 
 const getAllReviews = getAll(Review);
 const getReview = getOne(Review);
+const checkReviewOwnership = catchAsync(async (req, res, next) => {
+  const review = await Review.findById(req.params.id);
+
+  if (!review) {
+    return next(new AppError("No review found with that ID", 404));
+  }
+
+  if (review.user.id !== req.user.id) {
+    return next(new AppError("You can only modify your own reviews", 403));
+  }
+
+  next();
+});
 const updateReview = updateOne(Review);
 const deleteReview = deleteOne(Review);
 
@@ -61,4 +74,5 @@ module.exports = {
   addReview,
   updateReview,
   deleteReview,
+  checkReviewOwnership,
 };

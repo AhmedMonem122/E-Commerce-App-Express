@@ -12,6 +12,7 @@ router
   .post(
     authController.protect,
     authController.restrictTo("user"),
+    reviewController.checkReviewOwnership,
     reviewController.setProductUserIds,
     reviewController.addReview
   );
@@ -22,11 +23,13 @@ router
   .patch(
     authController.protect,
     authController.restrictTo("user", "admin"),
+    reviewController.checkReviewOwnership,
     reviewController.updateReview
   )
   .delete(
     authController.protect,
     authController.restrictTo("user", "admin"),
+    reviewController.checkReviewOwnership,
     reviewController.deleteReview
   );
 
