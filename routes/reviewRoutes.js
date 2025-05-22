@@ -12,7 +12,6 @@ router
   .post(
     authController.protect,
     authController.restrictTo("user"),
-    reviewController.checkReviewOwnership,
     reviewController.setProductUserIds,
     reviewController.addReview
   );
